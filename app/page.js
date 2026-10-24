@@ -15,6 +15,7 @@ import {
   X,
   Pencil
 } from "lucide-react";
+import Footer from "./components/Footer";
 
 export default function Home() {
   const [activeFilter, setActiveFilter] = useState("All Tasks");
@@ -449,6 +450,7 @@ export default function Home() {
           </div>
         </section>
       </div>
+      <Footer/>
     </main>
   );
 }
