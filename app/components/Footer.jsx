@@ -25,7 +25,7 @@ const Footer = () => {
                     onClick={backToTop}
                     title="Back to top"
                     aria-label="Back to top"
-                    className="fixed bottom-6 right-6 z-50 rounded-full border p-2 text-green-600"
+                    className="fixed bottom-6 right-6 z-50 rounded-full bg-green-600 p-1 text-white"
                 >
                     <ArrowUp size={25} />
                 </button>
