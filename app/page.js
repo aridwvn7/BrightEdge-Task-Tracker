@@ -12,7 +12,8 @@ import {
   Bell,
   Menu,
   Trash,
-  X
+  X,
+  Pencil
 } from "lucide-react";
 
 export default function Home() {
@@ -23,6 +24,9 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [tasksLoaded, setTasksLoaded] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [editingTaskId, setEditingTaskId] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
 
   // USE EFFECT
   useEffect(() => {
@@ -64,13 +68,48 @@ export default function Home() {
     setTaskDescription("");
   };
 
+  const startEditing = (task) => {
+    setEditingTaskId(task.id);
+    setEditTitle(task.title);
+    setEditDescription(task.description || "");
+  };
+
+  const saveEditedTask = () => {
+    if (editTitle.trim() === "") return;
+
+    setTasks(
+      tasks.map((task) =>
+        task.id === editingTaskId
+          ? {
+            ...task,
+            title: editTitle.trim(),
+            description: editDescription.trim(),
+          }
+          : task
+      )
+    );
+
+    setEditingTaskId(null);
+    setEditTitle("");
+    setEditDescription("");
+  };
+
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <div className="flex min-h-screen">
 
         {/* Sidebar */}
 
-        
+
+        {sidebarOpen && (
+          <div
+            onClick={() => setSidebarOpen(false)}
+            className="fixed inset-0 z-30 bg-black/40 md:hidden"
+            aria-hidden="true"
+          />
+        )}
+
+
 
         <aside className={`${sidebarOpen ? "block" : "hidden"
           } absolute left-0 top-0 z-40 h-full w-64 border-r border-slate-200 bg-white p-6 md:relative md:block`}>
@@ -298,43 +337,74 @@ export default function Home() {
                     >
 
 
-                      {/* <button
-                        onClick={() =>
-                          setTasks(
-                            tasks.map((item) =>
-                              item.id === task.id
-                                ? { ...item, completed: !item.completed }
-                                : item
-                            )
-                          )
-                        }
-                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border ${task.completed
-                            ? "border-green-600 bg-green-600 text-white"
-                            : "border-slate-300 hover:border-green-600"
-                          }`}
-                      >
-                        {task.completed && <CheckCircle size={14} />}
-                      </button> */}
 
+                      <div className="min-w-0 flex-1">
+                        {editingTaskId === task.id ? (
+                          <div className="space-y-3">
+                            <input
+                              value={editTitle}
+                              onChange={(event) => setEditTitle(event.target.value)}
+                              placeholder="Task title"
+                              className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-green-500"
+                            />
 
-                      <div className="flex-1">
-                        <p
-                          className={`font-semibold ${task.completed
-                            ? "text-slate-400 line-through"
-                            : "text-slate-800"
-                            }`}
-                        >
-                          {task.title}
-                        </p>
-                        {task.description && (
-                          <p className="mt-1 text-sm text-slate-500">
-                            {task.description}
-                          </p>
+                            <textarea
+                              value={editDescription}
+                              onChange={(event) => setEditDescription(event.target.value)}
+                              placeholder="Task description"
+                              rows={2}
+                              className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-green-500"
+                            />
+
+                            <div className="flex flex-wrap gap-2">
+                              <button
+                                onClick={saveEditedTask}
+                                className="rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700"
+                              >
+                                Save
+                              </button>
+
+                              <button
+                                onClick={() => setEditingTaskId(null)}
+                                className="rounded-lg border border-slate-300 px-3 py-2 text-sm hover:bg-slate-100"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <p
+                              className={`font-semibold ${task.completed
+                                  ? "text-slate-400 line-through"
+                                  : "text-slate-800"
+                                }`}
+                            >
+                              {task.title}
+                            </p>
+
+                            {task.description && (
+                              <p className="mt-1 text-sm text-slate-500">
+                                {task.description}
+                              </p>
+                            )}
+
+                            <p className="mt-1 text-sm text-slate-500">
+                              {task.completed ? "Completed" : "Pending"}
+                            </p>
+                          </>
                         )}
-                        <p className="mt-1 text-sm text-slate-500">
-                          {task.completed ? "Completed" : "Pending"}
-                        </p>
                       </div>
+
+
+                      {/* EDIT BUTTON */}
+                      <button
+                        onClick={() => startEditing(task)}
+                        title="Edit task"
+                        className="rounded-lg p-2 text-slate-400 transition hover:bg-green-50 hover:text-green-600"
+                      >
+                        <Pencil size={20} />
+                      </button>
 
                       {/* COMPLETE/ UNDO BUTTON */}
 
